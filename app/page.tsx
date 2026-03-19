@@ -350,7 +350,7 @@ export default function BattlePage() {
               <div className="flex items-center gap-1.5">
                 {character.buffs?.defenseBoost ? (
                   <>
-                    <GameImage src={ASSETS.ui.defense} alt="厚甲" size={18} />
+                    <GameImage src={ASSETS.ui.shield} alt="厚甲" size={18} />
                     <span className="text-sky-600 font-bold">{character.buffs.defenseBoost.turnsLeft}回合</span>
                   </>
                 ) : (
@@ -532,7 +532,7 @@ export default function BattlePage() {
             s1: { icon: ASSETS.ui.thump,   gradient: 'from-orange-300 to-amber-300 hover:from-orange-400 hover:to-amber-400', text: 'text-orange-900', border: 'border-orange-200/50', shadow: 'rgba(251,146,60,0.15)' },
             s2: { icon: ASSETS.ui.medicine, gradient: 'from-emerald-300 to-teal-300 hover:from-emerald-400 hover:to-teal-400', text: 'text-emerald-900', border: 'border-emerald-200/50', shadow: 'rgba(52,211,153,0.15)' },
             s3: { icon: ASSETS.ui.rage,    gradient: 'from-purple-300 to-violet-300 hover:from-purple-400 hover:to-violet-400', text: 'text-purple-900', border: 'border-purple-200/50', shadow: 'rgba(168,85,247,0.15)' },
-            s4: { icon: ASSETS.ui.defense, gradient: 'from-sky-300 to-cyan-300 hover:from-sky-400 hover:to-cyan-400', text: 'text-sky-900', border: 'border-sky-200/50', shadow: 'rgba(56,189,248,0.15)' },
+            s4: { icon: ASSETS.ui.shield, gradient: 'from-sky-300 to-cyan-300 hover:from-sky-400 hover:to-cyan-400', text: 'text-sky-900', border: 'border-sky-200/50', shadow: 'rgba(56,189,248,0.15)' },
             s5: { icon: ASSETS.ui.frozen,  gradient: 'from-blue-300 to-indigo-300 hover:from-blue-400 hover:to-indigo-400', text: 'text-blue-900', border: 'border-blue-200/50', shadow: 'rgba(99,102,241,0.15)' },
           }
           const cfg = cfgMap[sid]

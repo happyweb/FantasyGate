@@ -16,7 +16,7 @@ const SKILL_IMAGE_MAP: Record<string, string> = {
   s1: ASSETS.ui.thump,
   s2: ASSETS.ui.medicine,
   s3: ASSETS.ui.rage,
-  s4: ASSETS.ui.defense,
+  s4: ASSETS.ui.shield,
   s5: ASSETS.ui.frozen,
 }
 

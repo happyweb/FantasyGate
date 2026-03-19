@@ -1,31 +1,51 @@
 // 图片资源配置（使用 /logo/ 路径）
 export const ASSETS = {
-  monsters: Array.from(
-    { length: 10 },
-    (_, i) => `/logo/monster/monster_${String(i + 1).padStart(2, "0")}.png`,
-  ),
+  monsters: [
+    "/logo/monster/monster_01.webp",
+    "/logo/monster/monster_02.webp",
+    "/logo/monster/monster_03.webp",
+    "/logo/monster/monster_04.png",
+    "/logo/monster/monster_05.png",
+    "/logo/monster/monster_06.webp",
+    "/logo/monster/monster_07.png",
+    "/logo/monster/monster_08.webp",
+    "/logo/monster/monster_09.webp",
+    "/logo/monster/monster_10.webp",
+  ],
 
   equipment: {
     weapon: Array.from(
       { length: 5 },
       (_, i) => `/logo/weapon/weapon_${String(i + 1).padStart(2, "0")}.png`,
     ),
-    armor: Array.from(
-      { length: 5 },
-      (_, i) => `/logo/armor/armor_${String(i + 1).padStart(2, "0")}.png`,
-    ),
-    helmet: Array.from(
-      { length: 5 },
-      (_, i) => `/logo/helmet/helmet_${String(i + 1).padStart(2, "0")}.png`,
-    ),
-    horse: Array.from(
-      { length: 5 },
-      (_, i) => `/logo/horse/horse_${String(i + 1).padStart(2, "0")}.png`,
-    ),
-    accessory: Array.from(
-      { length: 5 },
-      (_, i) => `/logo/ornament/ornament_${String(i + 1).padStart(2, "0")}.png`,
-    ),
+    armor: [
+      "/logo/armor/armor_01.png",
+      "/logo/armor/armor_02.png",
+      "/logo/armor/armor_03.png",
+      "/logo/armor/armor_04.webp",
+      "/logo/armor/armor_05.png",
+    ],
+    helmet: [
+      "/logo/helmet/helmet_01.png",
+      "/logo/helmet/helmet_02.webp",
+      "/logo/helmet/helmet_03.png",
+      "/logo/helmet/helmet_04.png",
+      "/logo/helmet/helmet_05.webp",
+    ],
+    horse: [
+      "/logo/horse/horse_01.png",
+      "/logo/horse/horse_02.png",
+      "/logo/horse/horse_03.png",
+      "/logo/horse/horse_04.png",
+      "/logo/horse/horse_05.webp",
+    ],
+    accessory: [
+      "/logo/ornament/ornament_01.webp",
+      "/logo/ornament/ornament_02.png",
+      "/logo/ornament/ornament_03.png",
+      "/logo/ornament/ornament_04.png",
+      "/logo/ornament/ornament_05.png",
+    ],
   },
 
   players: Array.from(
@@ -39,6 +59,7 @@ export const ASSETS = {
     award: "/logo/others/award.png",
     pass: "/logo/others/pass.png",
     defense: "/logo/others/defense.png",
+    shield: "/logo/others/shield.webp",
     thump: "/logo/others/thump.png",
     rage: "/logo/others/rage.png",
     medicine: "/logo/others/medicine.png",
@@ -47,14 +68,14 @@ export const ASSETS = {
     box: "/logo/others/box.png",
     map: "/logo/others/map.png",
     init: "/logo/others/init.png",
-    record: "/logo/others/record.png",
+    record: "/logo/others/record.webp",
     humanSkeleton: "/logo/others/human-skeleton.png",
     empiricalValue: "/logo/others/empirical-value.png",
     frozen: "/logo/others/frozen.png",
     atk: "/logo/others/ATK.png",
     armorValue: "/logo/others/armor-value.png",
-    criticalStrike: "/logo/others/critical-strike.png",
-    dodge: "/logo/others/dodge.png",
+    criticalStrike: "/logo/others/critical-strike.webp",
+    dodge: "/logo/others/dodge.webp",
   },
 
   food: {
@@ -65,6 +86,6 @@ export const ASSETS = {
 
   cdk: {
     vip666: "/logo/cdk/vip666.png",
-    vip888: "/logo/cdk/vip888.png",
+    vip888: "/logo/cdk/vip888.webp",
   },
 };
