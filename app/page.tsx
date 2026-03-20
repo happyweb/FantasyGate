@@ -259,7 +259,7 @@ export default function BattlePage() {
   const totalDefense = character.defense + (equipment.armor?.defense || 0) + defenseBuff
   const totalCritRate = Math.min(0.4, character.critRate + (equipment.accessory?.critRate || 0))
   const totalEvasionRate = Math.min(0.4, character.evasionRate + (equipment.horse?.evasionRate || 0))
-  const cycleName = CYCLE_CONFIG[cycle - 1]?.name ?? '简单'
+  const cycleName = CYCLE_CONFIG[cycle - 1]?.name ?? '比武草原'
   const isFinalVictory = Boolean(rewardModal?.finalVictory)
   const playerWaveClassMap = {
     heal: 'is-heal',
@@ -389,7 +389,7 @@ export default function BattlePage() {
                   <div
                     className={`relative w-20 h-20 ${monsterHitShake ? 'battle-hit-shake' : ''} ${sealWaveActive ? 'battle-seal-impact' : ''} ${currentMonster.frozenTurns && currentMonster.frozenTurns > 0 ? 'battle-frozen-target' : ''}`}
                   >
-                    <GameImage src={ASSETS.monsters[monsterIndex]} alt={currentMonster.name} size={80} priority />
+                    <GameImage src={currentMonster.image || ASSETS.ui.combat} alt={currentMonster.name} size={80} priority />
                     {Boolean(currentMonster.frozenTurns && currentMonster.frozenTurns > 0) && <div className="battle-frozen-crystals" />}
                     {thawBurstActive && <div className="battle-thaw-burst" />}
                     {monsterDamageFloat && (
@@ -635,7 +635,7 @@ export default function BattlePage() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-2.5">
-              <GameImage src={ASSETS.monsters[monsterIndex]} alt={currentMonster.name} size={64} />
+              <GameImage src={currentMonster.image || ASSETS.ui.combat} alt={currentMonster.name} size={64} />
               <div>
                 <div className="type-panel-title font-ui-bold text-strong">{currentMonster.name}</div>
                 <div className="type-meta text-primary-ui">{cycleName} / 第{monsterIndex + 1}关</div>
@@ -656,6 +656,12 @@ export default function BattlePage() {
               <div className="text-xs text-cyan-600 flex justify-between items-center mt-1"><span className="flex items-center gap-1"><GameImage src={ASSETS.ui.dodge} alt="闪避" size={14} />闪避率</span><span>{Math.round((currentMonster.evasionRate || 0) * 100)}%</span></div>
               <div className="text-xs text-indigo-600 flex justify-between items-center mt-1"><span className="flex items-center gap-1"><GameImage src={ASSETS.ui.frozen} alt="封印" size={14} />封印状态</span><span>{currentMonster.frozenTurns && currentMonster.frozenTurns > 0 ? `剩余${currentMonster.frozenTurns}回合` : '无'}</span></div>
             </div>
+
+            {currentMonster.description && (
+              <div className="ui-info-card ui-section-gap bg-amber-50/60">
+                <div className="type-meta text-secondary-ui leading-relaxed">{currentMonster.description}</div>
+              </div>
+            )}
 
             <Button
               className="w-full bg-linear-to-r from-amber-300 to-yellow-300 hover:from-amber-400 hover:to-yellow-400 text-amber-900 border-[1.5px] border-amber-300"
@@ -701,19 +707,19 @@ export default function BattlePage() {
                       className="type-meta text-amber-700 leading-relaxed"
                       style={{ animation: 'scale-up-center 0.3s ease 0.12s both' }}
                     >
-                      　　当第五枚传说装备的光辉汇聚，你踏着碎裂的石阶前行，看见结界的纹路重新亮起，像黑夜里伸出的第一缕晨光。
+                      　　当第五阶传说套装的辉芒汇聚，你踏过王庭深井的断阶，看见封锁纹阵被逐层点亮，像深渊尽头回返的第一束天光。
                     </p>
                     <p
                       className="type-meta text-amber-700 leading-relaxed"
                       style={{ animation: 'scale-up-center 0.3s ease 0.2s both' }}
                     >
-                      　　光明神的誓言在此刻被兑现——暗影魔王的嘶吼被封进时光，裂隙化作安静的星尘。曾经濒临崩塌的王国，终于等到命运回廊重新闭合。
+                      　　焚冠冥皇的王冠冥火在此刻熄灭，冥火骸军失去统御，亡潮像退去的黑潮般坍散。曾经濒临崩塌的王庭防线，终于等到裂隙回廊重新闭合。
                     </p>
                     <p
                       className="type-meta text-amber-700 leading-relaxed"
                       style={{ animation: 'scale-up-center 0.3s ease 0.28s both' }}
                     >
-                      　　你回望来路，每一次战斗、每一次进阶，都为这束光添了一层纹章。从史莱姆洞窟出发的你，已成为传说——艾尔大陆迎来久违的黎明。
+                      　　你回望来路，每一次破阵、每一次进阶，都为这束天光添上一道纹章。从比武草原到深渊王座，你已成为回廊传说，艾尔大陆迎来久违的黎明。
                     </p>
                   </div>
                 </>
@@ -732,7 +738,7 @@ export default function BattlePage() {
                       animation: 'slide-in-blurred-top 0.4s cubic-bezier(0.230, 1.000, 0.320, 1.000) both'
                     }}
                   >
-                    胜利！
+                    破阵得胜
                   </h2>
                 </>
               )}
@@ -760,6 +766,11 @@ export default function BattlePage() {
                       <GameImage src={ASSETS.food.largeMpPotion} alt="幽蓝魔力" size={18} />
                       <span>回蓝+50%</span>
                     </div>
+                    {rewardModal.chapterLine && (
+                      <div className="type-meta mt-2 rounded-xl border border-amber-200/80 bg-amber-100/60 px-2.5 py-2 text-left text-amber-800 leading-relaxed">
+                        {rewardModal.chapterLine}
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3 mb-5">
@@ -819,7 +830,7 @@ export default function BattlePage() {
           >
             <CardContent className="p-5 text-center">
               <div className="flex justify-center mb-2">
-                <GameImage src={ASSETS.ui.pass} alt="进阶完成" size={84} />
+                <GameImage src={ASSETS.ui.pass} alt="等级提升" size={84} />
               </div>
               <h2
                 className="type-page-title font-bold text-amber-600 mb-2.5"
@@ -828,7 +839,7 @@ export default function BattlePage() {
                   animation: 'slide-in-blurred-top 0.4s cubic-bezier(0.230, 1.000, 0.320, 1.000) both'
                 }}
               >
-                进阶完成！
+                等级提升
               </h2>
 
               <div
@@ -852,6 +863,11 @@ export default function BattlePage() {
                   <GameImage src={ASSETS.food.largeMpPotion} alt="幽蓝魔力" size={18} />
                   <span>回蓝+50%</span>
                 </div>
+                {rewardModal.chapterLine && (
+                  <div className="type-meta mt-2 rounded-xl border border-amber-200/80 bg-amber-100/60 px-2.5 py-2 text-left text-amber-800 leading-relaxed">
+                    {rewardModal.chapterLine}
+                  </div>
+                )}
               </div>
 
               {rewardModal.foodDrop && (
@@ -927,7 +943,7 @@ export default function BattlePage() {
                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
                 }}
               >
-                🎁 领取并进入下一等级
+                🎁 领取奖励
               </Button>
             </CardContent>
           </Card>
@@ -959,14 +975,14 @@ export default function BattlePage() {
                   animation: 'slide-in-blurred-top 0.4s cubic-bezier(0.230, 1.000, 0.320, 1.000) 0.1s both'
                 }}
               >
-                战败...
+                回廊失守
               </h2>
 
               <p
                 className="type-card-title text-gray-600 mb-4"
                 style={{ animation: 'scale-up-center 0.25s cubic-bezier(0.390, 0.575, 0.565, 1.000) 0.2s both' }}
               >
-                勇者倒下了，但冒险永不止步！
+                你在此役倒下，但封印之战尚未终结。
               </p>
 
               <div className="space-y-3">

@@ -66,7 +66,7 @@ export default function SkillsPage() {
       >
         <CardContent className="p-2.5 flex items-center justify-between">
           <div className="type-body flex items-center gap-1.5 text-amber-600/70">
-            💡 战斗获得金币后可升级技能
+            💡 术式会随实战成长，优先强化主力技能。
           </div>
           <div className="type-panel-title flex items-center gap-1 font-bold text-amber-700">
             <GameImage src={ASSETS.ui.gold} alt="金币" size={18} />

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Navigation from '@/components/Navigation'
 import GameImage from '@/components/GameImage'
 import { ASSETS } from '@/app/config/imageAssets'
-import { CYCLE_CONFIG, EQUIPMENT_TIERS, MONSTER_DATA, getCycleColorByTier, getEquipmentGlowStyleByItem, getSkillEffectText } from '@/app/config/gameData'
+import { CYCLE_CONFIG, EQUIPMENT_TIERS, MONSTER_DATA, WORLD_MAPS, getCycleColorByTier, getEquipmentGlowStyleByItem, getSkillEffectText } from '@/app/config/gameData'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -29,6 +29,10 @@ const SKILL_IMAGE_MAP: Record<string, string> = {
 }
 
 const SKILL_DISPLAY_ORDER = ['s1', 's2', 's5', 's3', 's4'] as const
+const MONSTER_CODEX_GROUPS = WORLD_MAPS.map(map => ({
+  map,
+  monsters: MONSTER_DATA.filter(monster => monster.level === map.level)
+}))
 
 const EQUIPMENT_LABELS: Record<'weapon' | 'armor' | 'helmet' | 'horse' | 'accessory', string> = {
   weapon: '武器',
@@ -43,19 +47,19 @@ const CONSUMABLE_CODEX: Array<{ name: string; image: string; effect: string; des
     name: '清凉西瓜',
     image: ASSETS.food.watermelon,
     effect: '恢复 100 点生命',
-    description: '战后稳血补给。'
+    description: '南境绿洲的常备战地补给，适合稳住前线续航。'
   },
   {
     name: '赤焰生命',
     image: ASSETS.food.largeHpPotion,
     effect: '恢复 80% 最大生命',
-    description: '高压战局紧急续航。'
+    description: '神殿炼金高阶药剂，常用于濒危时强行拉回血线。'
   },
   {
     name: '幽蓝魔力',
     image: ASSETS.food.largeMpPotion,
     effect: '恢复 80% 最大魔力',
-    description: '快速重启法术循环。'
+    description: '封存月华星屑的回魔药剂，可快速重建施法节奏。'
   },
 ]
 
@@ -63,14 +67,14 @@ const SPECIAL_WEAPON_CODEX = {
   name: '开荒破阵刃',
   image: ASSETS.cdk.vip666,
   effect: '攻击 +25',
-  description: '面向新人的福利武器，帮助快速度过开荒阶段。'
+  description: '王都军备署签发的新兵特供武器，专为快速开荒破阵而生。'
 }
 
 const SPECIAL_WISH_CODEX = {
   name: '星潮愿望瓶',
   image: ASSETS.cdk.vip888,
   effect: '开启后随机获得 3 个消耗品或 500 金币',
-  description: '来自回廊彼端的神秘祝福，命运会在瓶口打开时给出答案。'
+  description: '来自回廊彼端的封存祝福，开启瞬间命运会直接兑现结果。'
 }
 
 type CodexDetail = {
@@ -108,7 +112,6 @@ export default function ArchivePage() {
     refreshCheckpoints,
     isHydrated,
     character,
-    cycle,
     monsterIndex,
     skills,
     redeemCode,
@@ -155,22 +158,13 @@ export default function ArchivePage() {
     }
   }
 
-  const getMonsterDetail = (index: number) => {
-    const monster = MONSTER_DATA[index]
-    const cycleTier = Math.min(
-      Math.max(cycle, 1),
-      Math.min(EQUIPMENT_TIERS.accessory.length, EQUIPMENT_TIERS.horse.length)
-    )
-    const cycleAccessory = EQUIPMENT_TIERS.accessory[cycleTier - 1] as { critRate?: number }
-    const cycleHorse = EQUIPMENT_TIERS.horse[cycleTier - 1] as { evasionRate?: number }
-    const monsterCritRate = (cycleAccessory.critRate || 0) * 0.5
-    const monsterEvasionRate = (cycleHorse.evasionRate || 0) * 0.5
+  const getMonsterDetail = (monster: (typeof MONSTER_DATA)[number]) => {
     return {
       title: monster.name,
-      subtitle: `第${index + 1}关出现 · 攻${monster.attack} 防${monster.defense} 血${monster.hp} · 暴${Math.round(monsterCritRate * 100)}% 闪${Math.round(monsterEvasionRate * 100)}%`,
-      image: ASSETS.monsters[index],
-      usage: `用于提供阶段性挑战与资源产出，不同怪物决定了当前关卡更偏向抗压、生存或爆发。`,
-      story: `${monster.name}受暗影裂隙污染而生，常驻于前线废墟。击败它们可夺回失落补给，维持王国防线。`
+      subtitle: `Lv.${monster.level} 第${monster.stage}关 · ${monster.mapName}`,
+      image: monster.image,
+      usage: `生命 ${monster.hp}/${monster.hp} · 攻击 ${monster.attack} · 防御 ${monster.defense} · 暴击率 ${Math.round((monster.critRate || 0) * 100)}% · 闪避率 ${Math.round((monster.evasionRate || 0) * 100)}% · 封印状态 无`,
+      story: monster.description
     }
   }
 
@@ -178,7 +172,7 @@ export default function ArchivePage() {
     title: item.name,
     subtitle: `${EQUIPMENT_LABELS[type]} · Lv.${item.tier}`,
     image: ASSETS.equipment[type][index],
-    usage: `${getEquipmentStatText(type, item)}，用于构建不同战斗流派。与技能搭配后可覆盖爆发、续航和容错。`,
+    usage: `核心属性：${getEquipmentStatText(type, item)}。`,
     story: `${item.description || '这件装备由王国工坊与神殿共同锻造，用于对抗暗影军团。'}`
   })
 
@@ -186,7 +180,7 @@ export default function ArchivePage() {
     title: skill.name,
     subtitle: `Lv.${skill.level}/${skill.maxLevel}`,
     image: SKILL_IMAGE_MAP[skill.id],
-    usage: `${getSkillEffectText(skill)}，蓝耗 ${skill.cost.mp}。合理穿插技能可显著提升回合收益。`,
+    usage: `当前效果：${getSkillEffectText(skill)} · 蓝耗 ${skill.cost.mp} · 下一级：${getSkillEffectText({ ...skill, level: Math.min(skill.level + 1, skill.maxLevel) })}`,
     story: `${skill.description}。这些术式源自光明神殿的古籍，历经战场验证后成为勇者的核心战斗手段。`
   })
 
@@ -194,7 +188,7 @@ export default function ArchivePage() {
     title: item.name,
     subtitle: item.effect,
     image: item.image,
-    usage: `${item.effect}。适合在关键回合兜底，避免节奏断档。`,
+    usage: `实战效果：${item.effect}。`,
     story: `${item.name}来自艾尔大陆补给体系。王国后勤会将其封装后送往前线，保障勇者能持续推进封印战线。`
   })
 
@@ -202,7 +196,7 @@ export default function ArchivePage() {
     title: SPECIAL_WEAPON_CODEX.name,
     subtitle: `特殊武器 · ${SPECIAL_WEAPON_CODEX.effect}`,
     image: SPECIAL_WEAPON_CODEX.image,
-    usage: `兑换码 vip666 专属福利。${SPECIAL_WEAPON_CODEX.effect}，可显著降低前期开荒压力。`,
+    usage: `固定属性：${SPECIAL_WEAPON_CODEX.effect}。`,
     story: '王都军备署将这把武器列为新兵特供。它不追求华丽符文，只追求每一次挥砍都足够有效。'
   })
 
@@ -210,7 +204,7 @@ export default function ArchivePage() {
     title: SPECIAL_WISH_CODEX.name,
     subtitle: '特殊消耗品 · 命运奖励',
     image: SPECIAL_WISH_CODEX.image,
-    usage: `兑换码 vip888 专属奖励。${SPECIAL_WISH_CODEX.effect}。`,
+    usage: `开启后随机获得 3 个消耗品或 500 金币。`,
     story: '古老传说中，星潮退去时会留下这种愿望瓶。它不会回答问题，只会直接给出结果。'
   })
 
@@ -474,7 +468,7 @@ export default function ArchivePage() {
                 <div className="flex justify-center mb-2"><GameImage src={ASSETS.players[index]} alt={cycleInfo.title} size={76} /></div>
                 <div className="type-body font-ui-bold" style={{ color: cycleInfo.color }}>{cycleInfo.title}</div>
                 <div className="type-meta text-secondary-ui mt-1">Lv.{index + 1}</div>
-                <div className="type-micro text-muted-ui mt-1">难度：{cycleInfo.name} · 强度倍率 {cycleInfo.multiplier}</div>
+                <div className="type-micro text-muted-ui mt-1">地图：{cycleInfo.name} · 强度倍率 {cycleInfo.multiplier}</div>
               </CardContent>
             </Card>
           ))}
@@ -482,19 +476,25 @@ export default function ArchivePage() {
       )}
 
       {isCodexOpen && activeTab === 'monsters' && (
-        <div className="grid grid-cols-2 ui-grid-gap ui-section-gap">
-          {MONSTER_DATA.map((monster, index) => (
-            <Card
-              key={monster.name}
-              className="ui-panel-card cursor-pointer transition-transform hover:scale-[1.01]"
-              style={{ boxShadow: '0 3px 10px rgba(0,0,0,0.06)' }}
-              onClick={() => setSelectedCodex(getMonsterDetail(index))}
-            >
-              <CardContent className="p-2.5 text-center">
-                <div className="flex justify-center mb-2"><GameImage src={ASSETS.monsters[index]} alt={monster.name} size={72} /></div>
-                <div className="type-body font-ui-bold text-strong">{monster.name}</div>
-                <div className="type-meta text-primary-ui mt-1">第{index + 1}关出现</div>
-                <div className="type-micro text-muted-ui mt-1">HP {monster.hp} · 攻击 {monster.attack} · 防御 {monster.defense}</div>
+        <div className="space-y-2.5 mb-2.5">
+          {MONSTER_CODEX_GROUPS.map(({ map, monsters }) => (
+            <Card key={map.level} className="ui-panel-card" style={{ boxShadow: '0 3px 10px rgba(0,0,0,0.06)' }}>
+              <CardContent className="p-2.5">
+                <div className="type-body font-ui-bold text-primary-ui mb-1">Lv.{map.level} · {map.name}</div>
+                <div className="type-micro text-muted-ui mb-2">{map.theme}</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {monsters.map(monster => (
+                    <div
+                      key={monster.id}
+                      className="rounded-xl border border-amber-100 bg-amber-50/50 p-1.5 text-center cursor-pointer transition-transform hover:scale-[1.01]"
+                      onClick={() => setSelectedCodex(getMonsterDetail(monster))}
+                    >
+                      <div className="flex justify-center mb-1.5"><GameImage src={monster.image} alt={monster.name} size={62} /></div>
+                      <div className="type-meta font-ui-semibold text-strong">{monster.name}</div>
+                      <div className="type-micro text-primary-ui mt-1">第{monster.stage}关</div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           ))}

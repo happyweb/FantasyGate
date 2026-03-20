@@ -33,7 +33,7 @@ export const SHOP_ITEMS: ShopItem[] = [
       healHp: 100,
       image: ASSETS.food.watermelon,
       description:
-        "　　艾尔大陆南部沙漠绿洲中生长的神奇果实，果肉鲜红多汁，蕴含着大地的生命之力。",
+        "南境绿洲培育的高含水战地果实，切开即带清甜凉气，适合战后稳住生命线。",
     },
   },
   {
@@ -47,7 +47,7 @@ export const SHOP_ITEMS: ShopItem[] = [
       healHpPct: 0.8,
       image: ASSETS.food.largeHpPotion,
       description:
-        "　　由圣地神殿炼金术士秘制而成的高阶生命药剂，能在危急时快速恢复战力。",
+        "神殿炼金所提炼的高阶生命药剂，专为高压关卡设计，能迅速拉回濒危血线。",
     },
   },
   {
@@ -61,7 +61,7 @@ export const SHOP_ITEMS: ShopItem[] = [
       healMpPct: 0.8,
       image: ASSETS.food.largeMpPotion,
       description:
-        "　　封存月华与星屑的魔力药剂，可迅速回补大量蓝量，适合技能连发前使用。",
+        "封存月华与星屑精华的回魔药剂，可在短时间重建施法循环，适合连续爆发前使用。",
     },
   },
 ];

@@ -1,17 +1,18 @@
 // 图片资源配置（使用 /logo/ 路径）
+const MONSTER_PNG_ASSETS = new Set(["m-lv2-2", "m-lv5-2", "m-lv5-5"]);
+
+const MONSTER_ASSETS = Array.from({ length: 5 }, (_, levelIndex) => {
+  const level = levelIndex + 1;
+  return Array.from({ length: 10 }, (_, stageIndex) => {
+    const stage = stageIndex + 1;
+    const id = `m-lv${level}-${stage}`;
+    const extension = MONSTER_PNG_ASSETS.has(id) ? "png" : "webp";
+    return `/logo/monster/${id}.${extension}`;
+  });
+}).flat();
+
 export const ASSETS = {
-  monsters: [
-    "/logo/monster/monster_01.webp",
-    "/logo/monster/monster_02.webp",
-    "/logo/monster/monster_03.webp",
-    "/logo/monster/monster_04.png",
-    "/logo/monster/monster_05.png",
-    "/logo/monster/monster_06.webp",
-    "/logo/monster/monster_07.png",
-    "/logo/monster/monster_08.webp",
-    "/logo/monster/monster_09.webp",
-    "/logo/monster/monster_10.webp",
-  ],
+  monsters: MONSTER_ASSETS,
 
   equipment: {
     weapon: Array.from(

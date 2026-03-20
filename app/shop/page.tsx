@@ -83,6 +83,10 @@ export default function ShopPage() {
           boxShadow: '0 4px 12px rgba(200,150,80,0.2), 0 2px 4px rgba(200,150,80,0.1), inset 0 1px 2px rgba(255,255,255,0.9)',
         }}
       >
+        <div className="ui-info-card ui-section-gap bg-amber-50/60 mb-2">
+          <div className="type-meta text-secondary-ui leading-relaxed">军需官在回廊驿站整备补给。合理囤积药剂，往往比一次冒进冲锋更接近胜利。</div>
+        </div>
+
         <div className="flex items-center justify-between mb-2.5 gap-2">
           <div className="flex-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
             <div className="flex items-center gap-1 w-max">

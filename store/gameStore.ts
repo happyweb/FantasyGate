@@ -11,9 +11,8 @@ import {
 } from "@/types/game";
 import { ASSETS } from "@/app/config/imageAssets";
 import {
-  MONSTER_DATA,
-  CYCLE_CONFIG,
   EQUIPMENT_TIERS,
+  getMonsterByLevelAndStage,
   getPlayerGrowthStatsByLevel,
   getSkillStrikePower,
   getSkillHealAmount,
@@ -47,7 +46,7 @@ const initialSkills: Skill[] = [
     level: 1,
     maxLevel: 5,
     description:
-      "　　引雷贯刃的突进斩击，以攻击倍率叠加附加伤害，擅长瞬间破防收割。",
+      "以雷纹贯刃完成突进斩击，先破势再收割，是勇者最稳定的开阵术式。",
     cost: { gold: 50, mp: 20 },
     effect: { type: "damage", value: 20 },
   },
@@ -56,7 +55,7 @@ const initialSkills: Skill[] = [
     name: "战吼术",
     level: 1,
     maxLevel: 5,
-    description: "　　高声战吼鼓舞斗志，显著提升攻击强度并压制敌方气势。",
+    description: "将战意化为声浪震开怯意，短时间内大幅抬升进攻压迫力。",
     cost: { gold: 50, mp: 15 },
     effect: { type: "buff", value: 5, buffType: "attack", duration: 7 },
   },
@@ -65,7 +64,7 @@ const initialSkills: Skill[] = [
     name: "治疗术",
     level: 1,
     maxLevel: 5,
-    description: "　　施展治疗魔法，恢复生命值",
+    description: "引导圣愈微光缝合伤势，在拉锯战中重建生存节奏。",
     cost: { gold: 50, mp: 10 },
     effect: { type: "heal", value: 30 },
   },
@@ -74,7 +73,7 @@ const initialSkills: Skill[] = [
     name: "圣盾术",
     level: 1,
     maxLevel: 5,
-    description: "　　召唤圣光护盾环身，大幅强化防御并稳住正面战线。",
+    description: "召来圣辉护壁覆盖周身，稳住前排并削弱敌方爆发窗口。",
     cost: { gold: 50, mp: 15 },
     effect: { type: "buff", value: 5, buffType: "defense", duration: 7 },
   },
@@ -83,7 +82,7 @@ const initialSkills: Skill[] = [
     name: "封印术",
     level: 1,
     maxLevel: 5,
-    description: "　　施加封印之力，有概率让敌人陷入封印并无法行动",
+    description: "刻下静默咒印封住敌方行动链，为反击争取关键回合。",
     cost: { gold: 50, mp: 15 },
     effect: { type: "debuff", value: 50, debuffType: "freeze", duration: 3 },
   },
@@ -163,7 +162,7 @@ const makeWatermelon = (n: number): Item => ({
   healHp: 100,
   image: ASSETS.food.watermelon,
   description:
-    "　　艾尔大陆南部沙漠绿洲中生长的神奇果实，果肉鲜红多汁，蕴含着大地的生命之力。勇者们在漫长的征途中将其视为珍贵的补给，一口下去疲惫尽消，伤口也能迅速愈合。",
+    "南境绿洲培育的高含水战地果实，切开即带清甜凉气。前线士兵常把它当作最稳妥的应急补给。",
 });
 
 const makeHpPotion = (n: number): Item => ({
@@ -173,7 +172,7 @@ const makeHpPotion = (n: number): Item => ({
   healHpPct: 0.8,
   image: ASSETS.food.largeHpPotion,
   description:
-    "　　由圣地神殿的炼金术士以百年血莲为主料秘制而成，瓶身散发着温暖的红色光芒。据说每一瓶都凝聚了治愈系法师三天三夜的心血，饮下后生命之力如潮水般涌回，重伤也能瞬间恢复大半。",
+    "神殿炼金所用血莲与晨露合成的高阶药剂，能在濒危时迅速拉回生命线。越是高压战局，越能体现它的价值。",
 });
 
 const makeMpPotion = (n: number): Item => ({
@@ -183,15 +182,15 @@ const makeMpPotion = (n: number): Item => ({
   healMpPct: 0.8,
   image: ASSETS.food.largeMpPotion,
   description:
-    '　　以深海星辰草与月华露炼制，瓶中液体呈深邃的蓝紫色，轻轻摇晃便有星光流动。魔法师们将其称为"智慧之泉"，饮下后精神力迅速恢复，枯竭的魔力就如同被重新点燃的火焰般熊熊燃起。',
+    "封存月华与星屑精华的蓝阶药剂，可快速回补施法所需魔力。连发术式前饮用，往往能逆转整轮战局。",
 });
 
 const LOOT_MESSAGES = [
-  "怪物倒下时，一件战利品从它身上滚落出来...",
-  "击败敌人后，你在废墟中发现了一件遗落之物。",
-  "胜利的余晖中，地面上闪烁着一件掉落品的光芒。",
-  "怪物消散之际，留下了一份意外的馈赠。",
-  "战斗结束，你从尸骸旁捡起了一件战利品。",
+  "敌影溃散后，一件补给在尘土间亮起微光。",
+  "你踏过残骸时，拾到了仍可用的前线补给。",
+  "胜势落定，战场边缘滚出一份意外收获。",
+  "短暂寂静后，一件掉落物从裂石缝里显露出来。",
+  "你在余烬旁俯身搜检，摸到了一件可用战利品。",
 ];
 
 // 所有食物工厂函数，新增食物时往这里加即可
@@ -250,9 +249,11 @@ const cloneSkill = (skill: Skill): Skill => {
     s4: "圣盾术",
   };
   const normalizedDescriptionMap: Partial<Record<Skill["id"], string>> = {
-    s1: "引雷贯刃的突进斩击，以攻击倍率叠加附加伤害，擅长瞬间破防收割。",
-    s3: "高声战吼鼓舞斗志，显著提升攻击强度并压制敌方气势。",
-    s4: "召唤圣光护盾环身，大幅强化防御并稳住正面战线。",
+    s1: "以雷纹贯刃完成突进斩击，先破势再收割，是勇者最稳定的开阵术式。",
+    s2: "引导圣愈微光缝合伤势，在拉锯战中重建生存节奏。",
+    s3: "将战意化为声浪震开怯意，短时间内大幅抬升进攻压迫力。",
+    s4: "召来圣辉护壁覆盖周身，稳住前排并削弱敌方爆发窗口。",
+    s5: "刻下静默咒印封住敌方行动链，为反击争取关键回合。",
   };
   const normalizedName = normalizedNameMap[skill.id] ?? skill.name;
   const normalizedDescription =
@@ -376,9 +377,9 @@ const createWishBottle = (): Item => ({
 
 const readAutoSaveFile = (): SaveFile | null => {
   if (globalThis.window === undefined) return null;
-  const raw = globalThis.localStorage.getItem(AUTO_SAVE_KEY);
-  if (!raw) return null;
   try {
+    const raw = globalThis.localStorage.getItem(AUTO_SAVE_KEY);
+    if (!raw) return null;
     return JSON.parse(raw) as SaveFile;
   } catch {
     return null;
@@ -387,18 +388,22 @@ const readAutoSaveFile = (): SaveFile | null => {
 
 const writeAutoSaveFile = (snapshot: CoreGameState) => {
   if (globalThis.window === undefined) return;
-  const payload: SaveFile = {
-    snapshot: createSnapshotFromState(snapshot),
-    lastSavedAt: new Date().toISOString(),
-  };
-  globalThis.localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(payload));
+  try {
+    const payload: SaveFile = {
+      snapshot: createSnapshotFromState(snapshot),
+      lastSavedAt: new Date().toISOString(),
+    };
+    globalThis.localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignore persistence write failures to keep gameplay available.
+  }
 };
 
 const readCycleCheckpointFiles = (): CycleCheckpointFile[] => {
   if (globalThis.window === undefined) return [];
-  const raw = globalThis.localStorage.getItem(CYCLE_CHECKPOINTS_KEY);
-  if (!raw) return [];
   try {
+    const raw = globalThis.localStorage.getItem(CYCLE_CHECKPOINTS_KEY);
+    if (!raw) return [];
     const parsed = JSON.parse(raw) as CycleCheckpointFile[];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -408,7 +413,14 @@ const readCycleCheckpointFiles = (): CycleCheckpointFile[] => {
 
 const writeCycleCheckpointFiles = (files: CycleCheckpointFile[]) => {
   if (globalThis.window === undefined) return;
-  globalThis.localStorage.setItem(CYCLE_CHECKPOINTS_KEY, JSON.stringify(files));
+  try {
+    globalThis.localStorage.setItem(
+      CYCLE_CHECKPOINTS_KEY,
+      JSON.stringify(files),
+    );
+  } catch {
+    // Ignore checkpoint write failures to avoid blocking gameplay.
+  }
 };
 
 const resolveSaveIdBySnapshot = (snapshot: CoreGameState): string =>
@@ -432,13 +444,23 @@ const createCheckpointSummary = (
   createdAt: checkpoint.createdAt,
 });
 
-const readCheckpointSummaries = (): CycleCheckpoint[] =>
-  readCycleCheckpointFiles()
-    .map(createCheckpointSummary)
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+const readCheckpointSummaries = (): CycleCheckpoint[] => {
+  const files = readCycleCheckpointFiles();
+  const summaries: CycleCheckpoint[] = [];
+
+  for (const file of files) {
+    try {
+      if (!file?.snapshot?.character) continue;
+      summaries.push(createCheckpointSummary(file));
+    } catch {
+      // Ignore malformed checkpoints so a bad entry does not block hydration.
+    }
+  }
+
+  return summaries.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+};
 
 const appendCycleCheckpoint = (snapshot: CoreGameState, cycle: number) => {
   const files = readCycleCheckpointFiles();
@@ -847,37 +869,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
   startBattle: () => {
     const state = get();
     const { monsterIndex, cycle } = state;
-    const base = MONSTER_DATA[monsterIndex];
-    const mult = CYCLE_CONFIG[cycle - 1].multiplier;
-    const cycleTier = Math.min(
-      Math.max(cycle, 1),
-      Math.min(EQUIPMENT_TIERS.accessory.length, EQUIPMENT_TIERS.horse.length),
-    );
-    const cycleAccessory = EQUIPMENT_TIERS.accessory[cycleTier - 1] as {
-      critRate?: number;
-    };
-    const cycleHorse = EQUIPMENT_TIERS.horse[cycleTier - 1] as {
-      evasionRate?: number;
-    };
-    const baseMonsterCritRate = cycleAccessory.critRate || 0;
-    const baseMonsterEvasionRate = cycleHorse.evasionRate || 0;
+    const base = getMonsterByLevelAndStage(cycle, monsterIndex);
     set({
       currentMonster: {
-        id: `m${Date.now()}`,
+        id: base.id,
         name: base.name,
-        hp: Math.floor(base.hp * mult),
-        maxHp: Math.floor(base.hp * mult),
-        attack: Math.floor(base.attack * mult),
-        defense: Math.floor(base.defense * mult),
-        critRate: Math.min(
-          MONSTER_RATE_CAP,
-          Math.round(baseMonsterCritRate * 0.5 * 100) / 100,
-        ),
-        evasionRate: Math.min(
-          MONSTER_RATE_CAP,
-          Math.round(baseMonsterEvasionRate * 0.5 * 100) / 100,
-        ),
-        reward: { exp: 10, gold: 50 + Math.round(monsterIndex * (50 / 9)) },
+        level: base.level,
+        stage: base.stage,
+        mapName: base.mapName,
+        image: base.image,
+        description: base.description,
+        hp: base.hp,
+        maxHp: base.hp,
+        attack: base.attack,
+        defense: base.defense,
+        critRate: Math.min(MONSTER_RATE_CAP, base.critRate || 0),
+        evasionRate: Math.min(MONSTER_RATE_CAP, base.evasionRate || 0),
+        reward: base.reward,
       },
       battleLog: [createLogEntry("战斗开始！", "system")],
       isPlayerTurn: true,
@@ -1575,22 +1583,43 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   initializePersistence: () => {
     if (globalThis.window === undefined) return;
-    let activeFile = readAutoSaveFile();
-    if (!activeFile) {
-      const freshState = createCoreGameState(false);
-      writeAutoSaveFile(freshState);
-      activeFile = readAutoSaveFile();
-    }
+    try {
+      let activeFile = readAutoSaveFile();
+      if (!activeFile) {
+        const freshState = createCoreGameState(false);
+        writeAutoSaveFile(freshState);
+        activeFile = readAutoSaveFile();
+      }
 
-    set({
-      ...(activeFile
-        ? createSnapshotFromState(activeFile.snapshot)
-        : createCoreGameState()),
-      checkpoints: readCheckpointSummaries(),
-      isHydrated: true,
-      battlePhase: "idle",
-      battleTransitionText: "",
-    });
+      let hydratedState: CoreGameState;
+      try {
+        hydratedState = activeFile
+          ? createSnapshotFromState(activeFile.snapshot)
+          : createCoreGameState();
+      } catch {
+        // Fallback to a fresh snapshot when existing save schema is broken.
+        hydratedState = createCoreGameState(false);
+        writeAutoSaveFile(hydratedState);
+      }
+
+      set({
+        ...hydratedState,
+        checkpoints: readCheckpointSummaries(),
+        isHydrated: true,
+        battlePhase: "idle",
+        battleTransitionText: "",
+      });
+    } catch {
+      // Last-resort fallback: always unblock UI from hydration screen.
+      const fallback = createCoreGameState(false);
+      set({
+        ...fallback,
+        checkpoints: [],
+        isHydrated: true,
+        battlePhase: "idle",
+        battleTransitionText: "",
+      });
+    }
   },
 
   refreshCheckpoints: () => {

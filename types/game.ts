@@ -22,6 +22,11 @@ export interface Character {
 export interface Monster {
   id: string;
   name: string;
+  level?: number;
+  stage?: number;
+  mapName?: string;
+  image?: string;
+  description?: string;
   hp: number;
   maxHp: number;
   attack: number;
@@ -123,6 +128,7 @@ export interface GameState {
   rewardModal: {
     show: boolean;
     finalVictory?: boolean;
+    chapterLine?: string;
     exp: number;
     gold: number;
     mpRecovery?: number;
