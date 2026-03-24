@@ -375,18 +375,21 @@
   align-items: center;
   gap: 2px;
   padding: 4px 10px;
-  border-radius: 10px;
-  transition: all 0.2s;
+  border-radius: 0;
 }
 
-.nav a.active,
-.nav a:hover {
-  color: #6b4820;
-  background: rgba(255, 255, 255, 0.4);
+.nav a.active {
+  color: #5a2f00;
 }
 
 .nav a span.icon {
   font-size: 20px;
+}
+
+.nav a.active span.icon {
+  filter: drop-shadow(0 0 6px rgba(255, 230, 80, 1))
+    drop-shadow(0 0 14px rgba(245, 180, 20, 1))
+    drop-shadow(0 0 24px rgba(200, 100, 10, 0.8));
 }
 
 @keyframes accordion-breathe {
