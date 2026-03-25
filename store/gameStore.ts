@@ -185,6 +185,48 @@ const makeMpPotion = (n: number): Item => ({
     "封存月华与星屑精华的蓝阶药剂，可快速回补施法所需魔力。连发术式前饮用，往往能逆转整轮战局。",
 });
 
+const makeHotpot = (n: number): Item => ({
+  id: `food_hotpot_0${n}`,
+  name: "炙炎石锅饭",
+  type: "consumable",
+  healHp: 80,
+  image: ASSETS.food.food1,
+  description:
+    "战地伙头兵用炭火焖熟的石锅拌饭，焦香滚烫，一碗下肚能驱散疲乏，稳住受创的身体。",
+});
+
+const makeSeafoodBowl = (n: number): Item => ({
+  id: `food_seafood_bowl_0${n}`,
+  name: "海珍大丼",
+  type: "consumable",
+  healHpPct: 0.5,
+  healMpPct: 0.3,
+  image: ASSETS.food.food2,
+  description:
+    "从海港运来的珍稀海鲜拼盘，营养丰沛，既能大幅修复战伤，又能滋养灵力加速回蓝。",
+});
+
+const makeTomatoJuice = (n: number): Item => ({
+  id: `food_tomato_juice_0${n}`,
+  name: "烈焰番茄汁",
+  type: "consumable",
+  healHp: 50,
+  healMp: 60,
+  image: ASSETS.food.food3,
+  description:
+    "以烈日番茄榨制、混入芹香香料的战地特调，入喉火辣，能同时为血肉和灵脉注入活力。",
+});
+
+const makePoison = (n: number): Item => ({
+  id: `food_poison_0${n}`,
+  name: "森幽毒液",
+  type: "consumable",
+  drainHpPct: 0.3,
+  image: ASSETS.food.food4,
+  description:
+    "幽林深处炼制的绿色毒液，骷髅头标记警示着它的代价。服下者以血肉为燃料，瞬间将魔力回复至满载。",
+});
+
 const LOOT_MESSAGES = [
   "敌影溃散后，一件补给在尘土间亮起微光。",
   "你踏过残骸时，拾到了仍可用的前线补给。",
@@ -198,6 +240,10 @@ const FOOD_FACTORIES: Array<(n: number) => Item> = [
   makeWatermelon,
   makeHpPotion,
   makeMpPotion,
+  makeHotpot,
+  makeSeafoodBowl,
+  makeTomatoJuice,
+  makePoison,
 ];
 
 const makeRandomFood = (): Item => {
@@ -684,10 +730,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   useItem: (itemId: string) => {
     const state = get();
-    const item = state.inventory.find((i: Item) => i.id === itemId);
-    if (!item) return null;
+    const selectedItem = state.inventory.find((i: Item) => i.id === itemId);
+    if (!selectedItem) return null;
 
-    const newInventory = state.inventory.filter((i: Item) => i.id !== itemId);
+    const newInventory = [...state.inventory];
+    let item = selectedItem;
+
+    if (selectedItem.type === "consumable") {
+      // 背包展示按同名消耗品首个实例分组，消费时移除末尾实例可避免分组位置跳动。
+      const removeIndex = state.inventory.findLastIndex(
+        (i) => i.type === "consumable" && i.name === selectedItem.name,
+      );
+      if (removeIndex === -1) return null;
+      item = state.inventory[removeIndex];
+      newInventory.splice(removeIndex, 1);
+    } else {
+      const removeIndex = state.inventory.findIndex((i) => i.id === itemId);
+      if (removeIndex === -1) return null;
+      newInventory.splice(removeIndex, 1);
+    }
+
     const newCharacter = { ...state.character };
     const effectiveMaxHp = getEffectiveMaxHp(newCharacter, state.equipment);
 
@@ -717,6 +779,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
           "你轻轻摇晃星潮愿望瓶，三道不同颜色的微光飞出，化作可立即使用的前线补给。",
         items: bonusItems,
       };
+    }
+
+    if (item.drainHpPct) {
+      if (newCharacter.hp === 1) {
+        return {
+          title: "无法使用",
+          story:
+            "你颤抖着拔开瓶塞，却感到身体已在极限边缘——生命仅剩最后一丝，此时服下毒液将无力回天。森幽毒液被你慎重地收回了行囊。",
+        };
+      }
+      const drain = Math.ceil(newCharacter.hp * item.drainHpPct);
+      newCharacter.hp = Math.max(1, newCharacter.hp - drain);
+      newCharacter.mp = newCharacter.maxMp;
     }
 
     if (item.healHp)
@@ -769,6 +844,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
           return makeHpPotion(seed);
         case "shop_mp_potion":
           return makeMpPotion(seed);
+        case "shop_hotpot":
+          return makeHotpot(seed);
+        case "shop_seafood_bowl":
+          return makeSeafoodBowl(seed);
+        case "shop_tomato_juice":
+          return makeTomatoJuice(seed);
+        case "shop_poison":
+          return makePoison(seed);
         default:
           return null;
       }

@@ -83,6 +83,10 @@ export const ASSETS = {
     watermelon: "/logo/food/watermelon.png",
     largeHpPotion: "/logo/food/large-hp-potion.png",
     largeMpPotion: "/logo/food/large-mp-potion.png",
+    food1: "/logo/food/food-1.webp",
+    food2: "/logo/food/food-2.webp",
+    food3: "/logo/food/food-3.webp",
+    food4: "/logo/food/food-4.webp",
   },
 
   cdk: {

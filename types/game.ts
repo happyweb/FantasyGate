@@ -55,6 +55,7 @@ export interface Item {
   healMp?: number;
   healHpPct?: number;
   healMpPct?: number;
+  drainHpPct?: number;
   image?: string;
   description?: string;
   stats?: {

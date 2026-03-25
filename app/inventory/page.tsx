@@ -498,6 +498,7 @@ export default function InventoryPage() {
                   {item.healMp && <div className="type-meta text-sky-500">✨ 魔法恢复 +{item.healMp}</div>}
                   {item.healHpPct && <div className="type-meta text-emerald-600">❤️ 生命恢复 {item.healHpPct * 100}%</div>}
                   {item.healMpPct && <div className="type-meta text-sky-500">✨ 魔法恢复 {item.healMpPct * 100}%</div>}
+                  {item.drainHpPct && <div className="type-meta text-purple-500">💀 生命消耗 {Math.round(item.drainHpPct * 100)}%（当前血量）→ 魔力回满</div>}
                 </div>
               </div>
               {item.description && (
