@@ -521,7 +521,7 @@ export default function BattlePage() {
             attack()
           }}
           disabled={!canInteract}
-          className="battle-skill-btn-soft ui-button-card px-3 py-3 gap-2.5 type-meta h-full! flex flex-row items-center bg-linear-to-r from-amber-300 to-yellow-300 hover:from-amber-400 hover:to-yellow-400 text-amber-900 border border-amber-200/50"
+          className="battle-skill-btn-soft ui-button-card px-3 py-2.5 gap-2.5 type-meta h-full! flex flex-row items-center bg-linear-to-r from-amber-300 to-yellow-300 hover:from-amber-400 hover:to-yellow-400 text-amber-900 border border-amber-200/50"
           style={{
             minHeight: '3.5rem',
             boxShadow: '2px 2px 4px rgba(200,150,80,0.15), -2px -2px 4px rgba(255,255,255,0.7)',
@@ -568,7 +568,7 @@ export default function BattlePage() {
                 boxShadow: canUse ? `2px 2px 4px ${cfg.shadow}, -2px -2px 4px rgba(255,255,255,0.7)` : 'none',
                 transition: 'all 0.2s ease'
               }}
-              className={`battle-skill-btn-soft ui-button-card px-3 py-3 gap-2.5 type-meta h-full! flex flex-row items-center bg-linear-to-r ${cfg.gradient} ${cfg.text} border ${cfg.border}`}
+              className={`battle-skill-btn-soft ui-button-card px-3 py-2.5 gap-2.5 type-meta h-full! flex flex-row items-center bg-linear-to-r ${cfg.gradient} ${cfg.text} border ${cfg.border}`}
             >
               <div className="ui-button-icon" style={{ width: '2.6rem', height: '2.6rem' }}>
                 <GameImage src={cfg.icon} alt={skill.name} size={34} />

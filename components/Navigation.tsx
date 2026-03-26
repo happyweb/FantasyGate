@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import Image from 'next/image'
 import { ASSETS } from '@/app/config/imageAssets'
+import GameImage from './GameImage'
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -21,7 +21,7 @@ export default function Navigation() {
       {navItems.map(({ href, label, icon }) => (
         <Link key={href} href={href} className={pathname === href ? 'active' : ''}>
           <span className="icon">
-            <Image src={icon} alt={label} width={32} height={32} style={{ objectFit: 'contain' }} />
+            <GameImage src={icon} alt={label} size={32} showFallbackFrame={false} />
           </span>
           <span>{label}</span>
         </Link>

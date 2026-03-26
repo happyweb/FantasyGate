@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ASSETS } from '@/app/config/imageAssets'
 import { getChapterIntroConfig } from '@/app/config/gameData'
+import SafeImage from '@/components/SafeImage'
 
 interface RegionChapterIntroProps {
   cycle: number
@@ -81,8 +81,8 @@ export default function RegionChapterIntro({
           }}
         />
 
-        <div className="relative z-10 flex h-full flex-col">
-          <div>
+        <div className="relative z-10 flex h-full min-h-0 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
             <div className="mb-3">
               <div
                 className="type-label font-ui-bold uppercase tracking-[0.22em]"
@@ -138,24 +138,26 @@ export default function RegionChapterIntro({
               />
 
               <div className="relative h-34 sm:h-38">
-                <Image
+                <SafeImage
                   src={regionLogo}
                   alt={chapter.title}
                   fill
                   priority
                   sizes="(max-width: 640px) 72vw, 280px"
+                  fallbackSrc={ASSETS.ui.box}
                   style={{ objectFit: 'contain', objectPosition: 'center top' }}
                 />
               </div>
 
               <div className="mt-2 flex items-center gap-5 rounded-2xl bg-white/55 px-3 py-2">
                 <div className="relative h-13 w-10 shrink-0 self-center">
-                  <Image
+                  <SafeImage
                     src={playerImage}
                     alt={characterName}
                     fill
                     priority
                     sizes="40px"
+                    fallbackSrc={ASSETS.ui.init}
                     style={{ objectFit: 'contain', objectPosition: 'center bottom' }}
                   />
                 </div>
@@ -166,27 +168,27 @@ export default function RegionChapterIntro({
                 </div>
               </div>
             </div>
+
+            <div className="mt-3 space-y-2 pb-2">
+              {chapter.storyParagraphs.map((paragraph, index) => (
+                <p
+                  key={`${chapter.cycle}-${index}`}
+                  className="type-body rounded-[22px] border px-4 py-3 text-slate-700"
+                  style={{
+                    borderColor: chapter.palette.border,
+                    background: index === 0 ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0.5)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)'
+                  }}
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-3 space-y-2">
-            {chapter.storyParagraphs.map((paragraph, index) => (
-              <p
-                key={`${chapter.cycle}-${index}`}
-                className="type-body rounded-[22px] border px-4 py-3 text-slate-700"
-                style={{
-                  borderColor: chapter.palette.border,
-                  background: index === 0 ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0.5)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)'
-                }}
-              >
-                {paragraph}
-              </p>
-            ))}
-          </div>
-
-          <div className="min-h-3 flex-1 sm:min-h-4" />
-
-          <div className="pt-2">
+          <div className="shrink-0 border-t pt-3"
+            style={{ borderColor: 'rgba(255,255,255,0.22)' }}
+          >
             <Button
               onClick={handleEnter}
               className="h-13 w-full rounded-2xl border text-white type-panel-title font-bold transition-all hover:scale-[1.01] active:scale-[0.99]"

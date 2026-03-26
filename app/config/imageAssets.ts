@@ -61,7 +61,7 @@ export const ASSETS = {
 
   ui: {
     gold: "/logo/others/gold.png",
-    chest: "/logo/ui/chest.png",
+    chest: "/logo/others/box.png",
     award: "/logo/others/award.png",
     pass: "/logo/others/pass.png",
     defense: "/logo/others/defense.png",
