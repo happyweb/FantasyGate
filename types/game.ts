@@ -118,6 +118,11 @@ export interface CycleCheckpoint {
   createdAt: string;
 }
 
+export interface ChapterIntroState {
+  show: boolean;
+  cycle: number;
+}
+
 export interface GameState {
   character: Character;
   equipment: Equipment;
@@ -145,6 +150,7 @@ export interface GameState {
       accessory: Item;
     };
   } | null;
+  chapterIntro: ChapterIntroState | null;
   deathModal: boolean;
   monsterIndex: number;
   cycle: number;

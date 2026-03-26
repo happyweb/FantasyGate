@@ -4,6 +4,7 @@ import { useGameStore } from '@/store/gameStore'
 import Navigation from '@/components/Navigation'
 import GameImage from '@/components/GameImage'
 import IntroScreen from '@/components/IntroScreen'
+import RegionChapterIntro from '@/components/RegionChapterIntro'
 import { ASSETS } from '@/app/config/imageAssets'
 import { CYCLE_CONFIG, getCycleColorByItem, getEquipmentGlowStyleByItem, getSkillEffectText } from '@/app/config/gameData'
 import { Button } from '@/components/ui/button'
@@ -17,8 +18,9 @@ export default function BattlePage() {
   const {
     character, currentMonster, battleLog, isPlayerTurn,
     rewardModal, deathModal, monsterIndex, cycle, hasSeenIntro, isHydrated,
+    chapterIntro,
     startBattle, attack, useSkill: castSkill, skills,
-    closeRewardModal, claimCycleReward, resetGame, setHasSeenIntro,
+    closeRewardModal, claimCycleReward, dismissChapterIntroAndStartBattle, resetGame, setHasSeenIntro,
     checkpoints, restartFromLastCheckpoint, equipment,
     battlePhase
   } = useGameStore()
@@ -118,8 +120,8 @@ export default function BattlePage() {
 
   useEffect(() => {
     if (!isHydrated) return
-    if (!currentMonster && !rewardModal && !deathModal && hasSeenIntro) startBattle()
-  }, [currentMonster, rewardModal, deathModal, hasSeenIntro, isHydrated, startBattle])
+    if (!currentMonster && !rewardModal && !deathModal && !chapterIntro && hasSeenIntro) startBattle()
+  }, [currentMonster, rewardModal, deathModal, chapterIntro, hasSeenIntro, isHydrated, startBattle])
 
   useEffect(() => {
     return () => {
@@ -282,6 +284,17 @@ export default function BattlePage() {
   // 显示首屏
   if (!hasSeenIntro) {
     return <IntroScreen onStart={setHasSeenIntro} />
+  }
+
+  if (chapterIntro?.show) {
+    return (
+      <RegionChapterIntro
+        cycle={chapterIntro.cycle}
+        characterLevel={character.level}
+        characterName={character.playerName || character.name}
+        onEnter={dismissChapterIntroAndStartBattle}
+      />
+    )
   }
 
   return (
@@ -510,7 +523,7 @@ export default function BattlePage() {
           disabled={!canInteract}
           className="battle-skill-btn-soft ui-button-card px-3 py-3 gap-2.5 type-meta h-full! flex flex-row items-center bg-linear-to-r from-amber-300 to-yellow-300 hover:from-amber-400 hover:to-yellow-400 text-amber-900 border border-amber-200/50"
           style={{
-            minHeight: '3.7rem',
+            minHeight: '3.5rem',
             boxShadow: '2px 2px 4px rgba(200,150,80,0.15), -2px -2px 4px rgba(255,255,255,0.7)',
             transition: 'all 0.2s ease'
           }}
@@ -550,7 +563,7 @@ export default function BattlePage() {
               }}
               disabled={!canInteract || !canUse}
               style={{
-                minHeight: '3.7rem',
+                minHeight: '3.5rem',
                 opacity: canUse ? 1 : 0.5,
                 boxShadow: canUse ? `2px 2px 4px ${cfg.shadow}, -2px -2px 4px rgba(255,255,255,0.7)` : 'none',
                 transition: 'all 0.2s ease'

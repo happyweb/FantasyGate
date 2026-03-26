@@ -14,6 +14,11 @@ const MONSTER_ASSETS = Array.from({ length: 5 }, (_, levelIndex) => {
 export const ASSETS = {
   monsters: MONSTER_ASSETS,
 
+  plotStory: Array.from(
+    { length: 5 },
+    (_, i) => `/logo/plotStory/${i + 1}.webp`,
+  ),
+
   equipment: {
     weapon: Array.from(
       { length: 5 },

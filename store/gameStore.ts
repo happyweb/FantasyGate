@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   GameState,
   Character,
+  ChapterIntroState,
   Item,
   Skill,
   Equipment,
@@ -338,6 +339,18 @@ const cloneRewardModal = (
   };
 };
 
+const cloneChapterIntro = (
+  chapterIntro: ChapterIntroState | null,
+): ChapterIntroState | null => {
+  if (!chapterIntro) return null;
+  return { ...chapterIntro };
+};
+
+const createChapterIntroState = (cycle: number): ChapterIntroState => ({
+  show: true,
+  cycle,
+});
+
 type CoreGameState = Omit<GameState, "checkpoints" | "isHydrated">;
 
 type SaveFile = {
@@ -361,6 +374,7 @@ const createCoreGameState = (hasSeenIntro = false): CoreGameState => ({
   battleLog: [],
   isPlayerTurn: true,
   rewardModal: null,
+  chapterIntro: null,
   deathModal: false,
   monsterIndex: 0,
   cycle: 1,
@@ -391,6 +405,7 @@ const createSnapshotFromState = (state: CoreGameState): CoreGameState => ({
   battleLog: state.battleLog.map((entry) => ({ ...entry })),
   isPlayerTurn: state.isPlayerTurn,
   rewardModal: cloneRewardModal(state.rewardModal),
+  chapterIntro: cloneChapterIntro(state.chapterIntro),
   deathModal: state.deathModal,
   monsterIndex: state.monsterIndex,
   cycle: state.cycle,
@@ -658,6 +673,7 @@ interface GameStore extends GameState {
   addLog: (message: string, type?: BattleLogType) => void;
   closeRewardModal: () => void;
   claimCycleReward: () => void;
+  dismissChapterIntroAndStartBattle: () => void;
   resetGame: () => void;
   setHasSeenIntro: (playerName: string) => {
     success: boolean;
@@ -951,6 +967,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   startBattle: () => {
     const state = get();
+    if (state.chapterIntro?.show) return;
     const { monsterIndex, cycle } = state;
     const base = getMonsterByLevelAndStage(cycle, monsterIndex);
     set({
@@ -1621,6 +1638,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       monsterIndex: 0,
       showCycleReward: false,
       rewardModal: null,
+      chapterIntro: createChapterIntroState(cycle + 1),
       currentMonster: null,
       battleLog: [],
       isPlayerTurn: true,
@@ -1632,6 +1650,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     appendCycleCheckpoint(nextState, nextState.cycle);
     set(nextState);
     get().refreshCheckpoints();
+  },
+
+  dismissChapterIntroAndStartBattle: () => {
+    set({ chapterIntro: null });
     get().startBattle();
   },
 
@@ -1657,6 +1679,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     set((s) => ({
       hasSeenIntro: true,
+      chapterIntro: createChapterIntroState(1),
       character: { ...s.character, playerName: trimmedName },
       battlePhase: "idle",
       battleTransitionText: "",
@@ -1730,7 +1753,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       battlePhase: "idle",
       battleTransitionText: "",
     });
-    get().startBattle();
+    if (!snapshot.chapterIntro?.show) {
+      get().startBattle();
+    }
     return true;
   },
 
@@ -1757,7 +1782,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       battlePhase: "idle",
       battleTransitionText: "",
     });
-    get().startBattle();
+    if (!snapshot.chapterIntro?.show) {
+      get().startBattle();
+    }
     return true;
   },
 

@@ -253,6 +253,144 @@ export const WORLD_MAPS = [
   },
 ] as const;
 
+export type ChapterIntroConfig = {
+  cycle: number;
+  chapterLabel: string;
+  title: string;
+  subtitle: string;
+  storyParagraphs: [string, string, string];
+  ctaLabel: string;
+  palette: {
+    background: string;
+    panel: string;
+    accent: string;
+    border: string;
+    glow: string;
+    button: string;
+  };
+};
+
+export const CHAPTER_INTROS: ChapterIntroConfig[] = [
+  {
+    cycle: 1,
+    chapterLabel: "主线序章",
+    title: "踏入比武草原",
+    subtitle: "雾原前线",
+    storyParagraphs: [
+      "前线营地的火把仍在风里摇晃，雾原深处却已传来兽群踏过浅沼与草脊的沉闷回响。",
+      "你披上最初战甲，沿着残破木栈道走向失守已久的第一道防线，脚下木板仍残留昨夜血痕。",
+      "只要撕开白猿王布下的围猎圈，让雾原前线重新站稳，第一道封印纹就会在黑暗中再次发亮。",
+    ],
+    ctaLabel: "踏入雾原前线",
+    palette: {
+      background:
+        "linear-gradient(180deg, #071b17 0%, #0d2f27 42%, #173f2f 100%)",
+      panel:
+        "linear-gradient(180deg, rgba(244,255,248,0.94) 0%, rgba(228,246,236,0.9) 100%)",
+      accent: "#9ee7be",
+      border: "rgba(158,231,190,0.65)",
+      glow: "rgba(74, 222, 128, 0.3)",
+      button: "linear-gradient(135deg, #9ae6b4 0%, #48bb78 55%, #2f855a 100%)",
+    },
+  },
+  {
+    cycle: 2,
+    chapterLabel: "主线一章",
+    title: "踏入裂岩荒境",
+    subtitle: "裂石营地",
+    storyParagraphs: [
+      "草原封线被你撕开之后，敌军迅速向北侧矿道回缩，裂岩荒境的山壁间满是仓促集结的回声。",
+      "这里终年回荡铁镐与战鼓，混编部族正借矿坑、裂谷与熔岩暗道重新堆叠起更厚的防线。",
+      "唯有夺回裂石营地的高台烽火，让补给线重新穿过荒境腹地，第二道封印纹才能再次通明。",
+    ],
+    ctaLabel: "踏入裂石营地",
+    palette: {
+      background:
+        "linear-gradient(180deg, #0a1730 0%, #183058 38%, #27456f 100%)",
+      panel:
+        "linear-gradient(180deg, rgba(243,248,255,0.95) 0%, rgba(225,235,248,0.92) 100%)",
+      accent: "#98c9ff",
+      border: "rgba(152,201,255,0.65)",
+      glow: "rgba(96, 165, 250, 0.3)",
+      button: "linear-gradient(135deg, #93c5fd 0%, #3b82f6 55%, #1d4ed8 100%)",
+    },
+  },
+  {
+    cycle: 3,
+    chapterLabel: "主线二章",
+    title: "踏入断垣古堡",
+    subtitle: "古堡回廊",
+    storyParagraphs: [
+      "裂石烽火重燃的那一夜，月蚀也提前压向断垣古堡，废塔与高墙在黑潮里只剩下模糊轮廓。",
+      "血宴大厅与回廊深处彼此重叠，夜行眷属正沿着阴影巡猎，等待新的猎物误入它们的狩场。",
+      "只有把深处被掩埋的圣痕重新夺回来，让古堡回廊不再被黑潮吞没，第三道纹阵才会再度发亮。",
+    ],
+    ctaLabel: "踏入古堡回廊",
+    palette: {
+      background:
+        "linear-gradient(180deg, #190924 0%, #331247 45%, #4a1f60 100%)",
+      panel:
+        "linear-gradient(180deg, rgba(252,246,255,0.95) 0%, rgba(241,228,250,0.92) 100%)",
+      accent: "#d8b4fe",
+      border: "rgba(216,180,254,0.66)",
+      glow: "rgba(192, 132, 252, 0.3)",
+      button: "linear-gradient(135deg, #d8b4fe 0%, #a855f7 55%, #7e22ce 100%)",
+    },
+  },
+  {
+    cycle: 4,
+    chapterLabel: "主线三章",
+    title: "踏入风暴龙脊",
+    subtitle: "高空裂谷",
+    storyParagraphs: [
+      "古堡夜幕被你打穿之后，战线被迫一路抬升到云层之上，风暴龙脊的断桥与裂谷逐渐露出真貌。",
+      "这里的雷暴与孢雾昼夜撕扯天空，异植群落和龙裔巡军沿着高空岩脊反复围堵每一条前进路线。",
+      "只要你能在风暴中央稳住第四道封印纹，让高空要道重新连成一线，终焉王庭就再也藏不住了。",
+    ],
+    ctaLabel: "踏入高空裂谷",
+    palette: {
+      background:
+        "linear-gradient(180deg, #220d2b 0%, #5b1f4d 42%, #8b2f68 100%)",
+      panel:
+        "linear-gradient(180deg, rgba(255,246,250,0.95) 0%, rgba(251,228,238,0.92) 100%)",
+      accent: "#f9a8d4",
+      border: "rgba(249,168,212,0.66)",
+      glow: "rgba(236, 72, 153, 0.3)",
+      button: "linear-gradient(135deg, #f9a8d4 0%, #ec4899 55%, #be185d 100%)",
+    },
+  },
+  {
+    cycle: 5,
+    chapterLabel: "主线终章",
+    title: "踏入深渊王座",
+    subtitle: "终焉王庭",
+    storyParagraphs: [
+      "风暴龙脊的高台已经被你踩在脚下，深井尽头的王庭大门终于显形，沉重得像一整座黑夜缓缓开启。",
+      "亡骸祭坛的火光沿台阶一路向下，照亮焚冠冥皇布下的最后封锁，也照出王庭深处翻涌不息的冥火。",
+      "只要在这里彻底闭合第五道封印纹，让终焉王庭失去最后的依凭，这场远征就会迎来真正终局。",
+    ],
+    ctaLabel: "踏入终焉王庭",
+    palette: {
+      background:
+        "linear-gradient(180deg, #2c1206 0%, #5a2411 42%, #8a3a12 100%)",
+      panel:
+        "linear-gradient(180deg, rgba(255,247,240,0.95) 0%, rgba(251,231,214,0.92) 100%)",
+      accent: "#fdba74",
+      border: "rgba(253,186,116,0.66)",
+      glow: "rgba(249, 115, 22, 0.32)",
+      button: "linear-gradient(135deg, #fdba74 0%, #f97316 55%, #c2410c 100%)",
+    },
+  },
+];
+
+export const getChapterIntroConfig = (cycle: number): ChapterIntroConfig => {
+  const safeCycle = Math.min(
+    Math.max(Math.floor(cycle), 1),
+    CHAPTER_INTROS.length,
+  );
+  return CHAPTER_INTROS[safeCycle - 1];
+};
+
 const MONSTER_DATA_RAW: Array<Omit<MonsterConfig, "critRate" | "evasionRate">> =
   [
     {
